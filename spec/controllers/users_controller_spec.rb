@@ -29,11 +29,64 @@ RSpec.describe UsersController, type: :controller do
         user = User.find_by_credentials('greys', 'password')
         expect(session[:session_token]).to eq(user.session_token)
       end
+    end
   end
+
+
 
   subject (:joe) { User.create!(username: 'joe', password: 'password') }
 
   let (:sally) { User.create!(username: 'sally', password: 'password') }
    
-  describe 'POST'
+  describe 'Get #show' do
+    context 'when logged in' do
+      before do 
+        allow(controller).to recieve(:current_user) { joe }
+      end
+      it 'renders the show page of the specified user' do
+        get :show, params: { id: joe.id }
+        fetched_user = controller.instance_variable_get(:@user)
+        expect(fetched_user).to eq(User.find(joe.id))
+        expect(response).to render_template(:show)
+      end
+    end
+
+    context 'when logged out' do
+      before do 
+        allow(controller).to recieve(:current_user) { nil }
+      end
+
+      it 'redirects to the login page' do
+        get :show, params: { id: joe.id }
+        expect(response).to redirect_to(new_session_url)
+      end
+
+    end
+  end
+
+  describe 'Get #index' do
+    context 'when logged in' do
+      before do 
+        allow(controller).to recieve(:current_user) { joe }
+      end
+      it 'renders the index page of all the user' do
+        get :index
+        fetched_users = controller.instance_variable_get(:@users)
+        expect(fetched_users).to eq(User.all)
+        expect(response).to render_template(:index)
+      end
+    end
+    context 'when logged out' do
+      before do 
+        allow(controller).to recieve(:current_user) { nil }
+      end
+
+      it 'redirects to the login page' do
+        get :index
+        expect(response).to redirect_to(new_session_url)
+      end
+
+    end
+    
+  end
 end
