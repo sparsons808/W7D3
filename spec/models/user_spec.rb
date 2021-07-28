@@ -12,21 +12,19 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  subject {  User.create!(username: 'lilly_llama', password: 'password')}
 
-  describe 'validations' do
-    subject(:user) { FactoryBot.create(:user) }
-
-    it { should validate_presence_of(:username) }
-    it { should validate_presence_of(:password_digest) }
-    it { should validate_presence_of(:session_token) }
-    
-    it { should validate_absence_of(:password) }
-  end
+  it { should validate_presence_of(:username) }
+  it { should validate_uniqueness_of(:username) }
+  it { should validate_presence_of(:password_digest) }
+  it { should validate_presence_of(:session_token) }
+  
+  it { should validate_length_of(:password).is_at_least(6) }
 
   describe 'associations' do
     subject(:user) { FactoryBot.create(:user) }
 
-    it { should belong_to(:category).class_name('userCategory') }
+    # it { should belong_to(:category).class_name('userCategory') }
     it { should have_many(:goals) }
   end
 end
