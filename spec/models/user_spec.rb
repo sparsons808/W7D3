@@ -11,21 +11,22 @@
 #
 require 'rails_helper'
 
-class UserTest < ActiveSupport::TestCase
-  context 'validations' do
-    subject { build(:user) }
+RSpec.describe User, type: :model do
 
-    should validate_presence_of(:username)
-    should validate_presence_of(:password_digest)
-    should validate_presence_of(:session_token)
+  describe 'validations' do
+    subject(:user) { FactoryBot.create(:user) }
+
+    it { should validate_presence_of(:username) }
+    it { should validate_presence_of(:password_digest) }
+    it { should validate_presence_of(:session_token) }
     
-    should validate_absence_of(:password)
+    it { should validate_absence_of(:password) }
   end
 
-  context 'associations' do
-    subject {build(:user)}
+  describe 'associations' do
+    subject(:user) { FactoryBot.create(:user) }
 
-    should belong_to(:category).class_name('userCategory')
+    it { should belong_to(:category).class_name('userCategory') }
     it { should have_many(:goals) }
   end
 end
